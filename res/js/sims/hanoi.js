@@ -9,18 +9,14 @@ const initsimHanoi = () => {
     const sets = {
         destroy: app => {
             $(app.renderer.view).detach();
-            ALG.hanoi.backg.destroy();
 
             if(interval != null) {
                 clearInterval(interval);
             }
 
-            for (var i = 0; i < ALG.hanoi.polStack0.length; i++)
-                ALG.hanoi.polStack0[i].destroy();
-            for (var i = 0; i < ALG.hanoi.polStack1.length; i++)
-                ALG.hanoi.polStack1[i].destroy();
-            for (var i = 0; i < ALG.hanoi.polStack2.length; i++)
-                ALG.hanoi.polStack2[i].destroy();
+            for(var i = 0; i < app.stage.children.length; i++) {
+                app.stage.children[i].destroy();
+            }
 
             app.destroy();
             initsimHanoi();
