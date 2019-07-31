@@ -1,4 +1,6 @@
 var ALG = {};
+var Ctrler;
+var StepProgs;
 
 const colorset = [
     0xf4511e,
@@ -49,21 +51,46 @@ const simSprite = {
     }
 }
 
-const addSimCtrler = (fs) => {
-    var controller = `<div>
+const addSimCtrler = (fs, totalSteps) => {
+    var controller = `<div class="controller">
         <button id="ctrl_play" type="button">재생</button>
         <button id="ctrl_rewind" type="button">되감기</button>
         <button id="ctrl_prev" type="button">이전</button>
         <button id="ctrl_next" type="button">다음</button>
+        <div class="ui small progress steps" data-value="1" data-total="8" id="example5">
+            <div class="bar">
+                <div class="progress"></div>
+            </div>
+        </div>
     </div>`;
     $(".simcont").append(controller);
 
     $("#ctrl_play").click(() => {
         fs.play(1000);
     });
-    $("#ctrl_rewind").click(fs.rewind);
-    $("#ctrl_prev").click(fs.prev);
-    $("#ctrl_next").click(fs.next);
+    $("#ctrl_rewind").click(() => {
+        fs.rewind();
+    });
+    $("#ctrl_prev").click(() => {
+        fs.backward(1000);
+    });
+    $("#ctrl_next").click(() => {
+        fs.forward(1000);
+    });
+
+    Ctrler = $(".controller");
+
+    $('.ui.progress.steps')
+        .progress({
+            duration: 250,
+            total: totalSteps,
+            label: 'ratio',
+            text: {
+                ratio: '{value} / {total}'
+            }
+        }).progress('reset');
+
+    StepProgs = $(".ui.progress.steps");
 }
 
 const shuffleRandom = n => {
@@ -87,20 +114,20 @@ const shuffleRandom = n => {
     return ar;
 }
 
-const execAlgorithms = (js, args) => {
+const execAlgorithms = (js, args, callback) => {
     var w;
-    if(window.Worker){
-            w = new Worker(js);
-            w.postMessage(args)
-            w.onmessage = function(e) {
-                //alert(e.data);
-                console.log(e.data);
-                w.terminate();
-                w = undefined;
-                ALG[args.name].steps = e.data;
-            };
+    if (window.Worker) {
+        w = new Worker(js);
+        w.postMessage(args)
+        w.onmessage = function (e) {
+            //alert(e.data);
+            console.log(e.data);
+            w.terminate();
+            w = undefined;
+            callback(e.data);
+        };
     }
-    else{
+    else {
         alert('Web worker를 지원하지 않는 브라우저 입니다!');
     }
 }
@@ -130,7 +157,7 @@ function resize() {
         var w = window.innerWidth - 48;
         var h = (window.innerWidth - 48) / appratio;
     }
-    if(!glResz) {
+    if (!glResz) {
         glResz = true;
         glW = w;
         glH = h;
@@ -141,14 +168,57 @@ function resize() {
     reW = w;
     reH = h;
 }
-window.onresize = function(event) {
+window.onresize = function (event) {
     clearTimeout(resizeId);
     resizeId = setTimeout(doneResizing, 100);
     //resize();
 };
 
-function doneResizing(){
+function doneResizing() {
     //whatever we want to do
     setTimeout(function () {
     }, 50);
 }
+
+(function() {
+    var hidden = "hidden";
+  
+    // Standards:
+    if (hidden in document)
+      document.addEventListener("visibilitychange", onchange);
+    else if ((hidden = "mozHidden") in document)
+      document.addEventListener("mozvisibilitychange", onchange);
+    else if ((hidden = "webkitHidden") in document)
+      document.addEventListener("webkitvisibilitychange", onchange);
+    else if ((hidden = "msHidden") in document)
+      document.addEventListener("msvisibilitychange", onchange);
+    // IE 9 and lower:
+    else if ("onfocusin" in document)
+      document.onfocusin = document.onfocusout = onchange;
+    // All others:
+    else
+      window.onpageshow = window.onpagehide
+      = window.onfocus = window.onblur = onchange;
+  
+    function onchange (evt) {
+      var v = "visible", h = "hidden",
+          evtMap = {
+            focus:v, focusin:v, pageshow:v, blur:h, focusout:h, pagehide:h
+          };
+  
+      evt = evt || window.event;
+      if (evt.type in evtMap)
+        document.body.className = evtMap[evt.type];
+      else
+        document.body.className = this[hidden] ? "hidden" : "visible";
+
+        console.log(this[hidden]);
+
+        if(this[hidden]) {
+            ALG[ALG.current].pause();
+        }
+        else {
+            Ctrler.attr('disabled', false);
+        }
+    }
+  })();

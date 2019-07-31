@@ -1,6 +1,6 @@
 $(document).ready(function () {
     init();
-    console.log(ALG.hanoi.makes(10));
+    console.log(ALG.hanoi.makes(3));
 });
 
 var init = () => {
