@@ -1,4 +1,4 @@
-const testfunc = function() {
+const testfunc = function () {
     console.log("testtest");
 }
 
@@ -8,20 +8,19 @@ const initsimHanoi = () => {
 
     const sets = {
         destroy: app => {
-            $(app.renderer.view).detach();
-
-            if(interval != null) {
+            if (interval != null) {
                 clearInterval(interval);
             }
 
-            for(var i = 0; i < app.stage.children.length; i++) {
-                app.stage.children[i].destroy();
-            }
+            completeDestroyElems(app.stage);
 
+            $('#ctrl_upper').detach();
+            $('#ctrl_lower').detach();
+            $(app.renderer.view).detach();
             app.destroy();
             initsimHanoi();
         },
-        makes: num => {
+        makes: (num, arg) => {
             if (!num) return new Error("수행 값을 지정하지 않았습니다.");
             else if (!$.isNumeric(parseInt(num))) return new Error("값은 숫자여야 합니다.");
             else if (parseInt(num) < 1) return new Error("값은 1 이상이어야 합니다.");
@@ -29,21 +28,28 @@ const initsimHanoi = () => {
             num = parseInt(num);
 
             var colorMap = shuffleRandom(16);
+            var app = undefined;
+            var w = undefined;
+            var h = undefined;
 
-            var app = initSim.make({
-                width: window.innerWidth,
-                height: window.innerWidth / 2.612,
-                backgroundColor: 0xffffff,
-                antialias: true,
-                resolution: 1
-            });
-            initSim.set(app);
-            initSim.append(".simcont", app);
+            if (arg === undefined || arg === 0) {
+                app = initSim.make({
+                    width: window.innerWidth,
+                    height: window.innerWidth / 2.612,
+                    backgroundColor: 0xffffff,
+                    antialias: true,
+                    resolution: 1
+                });
+                initSim.set(app);
+                initSim.append(".simcont", app);
+                app.renderer.resize(app.renderer.view.parentElement.clientWidth - 32, app.renderer.view.parentElement.clientHeight);
+            }
+            else {
+                app = ALG.hanoi.app;
+            }
 
-            app.renderer.resize(app.renderer.view.parentElement.clientWidth - 32, app.renderer.view.parentElement.clientHeight);
-
-            var w = app.screen.width;
-            var h = app.screen.height;
+            w = app.screen.width;
+            h = app.screen.height;
 
             var pole = [
                 {
@@ -99,24 +105,38 @@ const initsimHanoi = () => {
                 app.stage.addChild(disc);
                 disc.y = y;
             }
-  
+
             execAlgorithms("res/js/assets/algorithms.js", {
                 name: "hanoi",
                 n: num
             }, data => {
                 ALG.hanoi.steps = data;
-                setTimeout(function () {
-                    $(".simcont").css({ opacity: 1 });
-                    addSimCtrler({
-                        play: ALG.hanoi.play,
-                        rewind: ALG.hanoi.rewind,
-                        backward: ALG.hanoi.backward,
-                        forward: ALG.hanoi.forward,
-                    }, data.length);
-                }, 333);
+                if (arg === undefined || arg === 0) {
+                    setTimeout(function () {
+                        $(".simcont").css({ opacity: 1 });
+                        addSimCtrler({
+                            play: ALG.hanoi.play,
+                            pause: ALG.hanoi.pause,
+                            reset: ALG.hanoi.reset,
+                            backward: ALG.hanoi.backward,
+                            forward: ALG.hanoi.forward,
+                        }, data.length);
+                    }, 333);
+                }
+                else {
+                    StepProgs.progress({
+                        duration: 250,
+                        total: data.length,
+                        label: 'none',
+                        onChange: function (percent, value, total) {
+                            $('.label-progstep').html(`${value} / ${total}`)
+                        }
+                    }).progress('reset');
+                }
             });
 
             ALG.current = "hanoi";
+            ALG.currentTitle = "하노이 탑";
             ALG.hanoi.app = app;
             ALG.hanoi.backg = g;
             ALG.hanoi.num = num;
@@ -136,17 +156,16 @@ const initsimHanoi = () => {
             ALG.hanoi.playing = true;
             ALG.hanoi.forward(_animTime);
             interval = setInterval(() => {
-                if(!ALG.hanoi.forward(_animTime)) {
+                if (!ALG.hanoi.forward(_animTime)) {
                     clearInterval(interval);
                     ALG.hanoi.playing = false;
-                    Ctrler.children().attr('disabled', false);
+                    Ctrler.find('.ctrlel').attr('disabled', false);
                 }
-                //Ctrler.children().attr('disabled', true);
             }, _animTime + 100);
         },
         pause: () => {
-            ALG.hanoi.playing = false;
-            if(interval != null) {
+            //ALG.hanoi.playing = false;
+            if (interval != null) {
                 clearInterval(interval);
             }
         },
@@ -155,27 +174,37 @@ const initsimHanoi = () => {
             ALG.hanoi.playing = true;
             ALG.hanoi.backward(_animTime);
             interval = setInterval(() => {
-                if(!ALG.hanoi.backward(_animTime)) {
+                if (!ALG.hanoi.backward(_animTime)) {
                     clearInterval(interval);
                     ALG.hanoi.playing = false;
-                    Ctrler.children().attr('disabled', false);
+                    Ctrler.find('.ctrlel').attr('disabled', false);
                 }
             }, _animTime + 24);
             StepProgs.progress('reset');
         },
         reset: num => {
             var _num = num;
-            if(num === undefined || num < 1) _num = ALG.hanoi.num;
-            $(".simcont").css({ opacity: 0 });
-            setTimeout(function () {
-                ALG.hanoi.destroy(ALG.hanoi.app);
-                ALG.hanoi.makes(_num);
-            }, 500);
+            var _app = ALG.hanoi.app;
+
+            if (num === undefined || num < 1) _num = ALG.hanoi.num;
+            //$(".simcont > canvas").css({ opacity: 0 });
+
+            if (interval != null) {
+                clearInterval(interval);
+            }
+
+            completeDestroyElems(_app.stage);
+
+            ALG.hanoi.makes(_num, 1);
             StepProgs.progress('reset');
         },
         forward: animTime => {
             if (ALG.hanoi.stepCount >= ALG.hanoi.steps.length) {
                 console.warn("단계의 끝입니다.");
+                Ctrler.find('#ctrl_play').attr('disabled', true);
+                $('#ctrl_play > i').removeClass('pause');
+                $('#ctrl_play > i').addClass('play');
+                $('#ctrl_play').addClass('ctrlel');
                 return false;
             }
 
@@ -258,7 +287,7 @@ const initsimHanoi = () => {
             var tweenMove = new TWEEN.Tween(coords);
             var tweenDown = new TWEEN.Tween(coords);
 
-            Ctrler.children().attr('disabled', true);
+            Ctrler.find('.ctrlel').attr('disabled', true);
 
             tweenUp.to({ x: coords.x, y: upY }, _animTime / 10 * 2)
                 .easing(animEasing)
@@ -282,7 +311,7 @@ const initsimHanoi = () => {
                 })
                 .onComplete(function () {
                     nextpol.push(currdisc);
-                    if(!ALG.hanoi.playing) Ctrler.children().attr('disabled', false);
+                    if (!ALG.hanoi.playing) Ctrler.find('.ctrlel').attr('disabled', false);
                     ALG.hanoi.stepCount++;
                 });
 
@@ -379,7 +408,7 @@ const initsimHanoi = () => {
             var tweenMove = new TWEEN.Tween(coords);
             var tweenDown = new TWEEN.Tween(coords);
 
-            Ctrler.children().attr('disabled', true);
+            Ctrler.find('.ctrlel').attr('disabled', true);
 
             tweenUp.to({ x: coords.x, y: upY }, _animTime / 10 * 2)
                 .easing(animEasing)
@@ -403,7 +432,7 @@ const initsimHanoi = () => {
                 })
                 .onComplete(function () {
                     nextpol.push(currdisc);
-                    if(!ALG.hanoi.playing) Ctrler.children().attr('disabled', false);
+                    if (!ALG.hanoi.playing) Ctrler.find('.ctrlel').attr('disabled', false);
                     //ALG.hanoi.stepCount--;
                 });
 

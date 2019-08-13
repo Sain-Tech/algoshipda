@@ -5,8 +5,69 @@
 }
 
 .simcont > canvas {
+    padding-left: 4px;
+    padding-right: 4px;
     width: 100% !important;
     height: initial !important;
+    transition: opacity .5s;
+}
+
+#ctrl_upper {
+    display: flex;
+    margin: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+#ctrl_lower {
+    margin: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+#select_animtime {
+    margin-top: 8px;
+}
+
+.ui.dropdown > .menu {
+    border-color: #1b1c1d;
+    background-color: #242627ef;
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+}
+
+.ui.dropdown > .menu > .item {
+    color: rgba(191,191,191,.87);
+}
+
+.ui.dropdown > .menu > .item:hover {
+    color: #fff;
+    background-color: #3a3d41ef;
+}
+
+.ui.dropdown > .menu > .item.active.selected {
+    color: #fff;
+    background-color: #4e5256ef;
+}
+
+.ui.progress.tiny {
+    height: 5px;
+    margin-bottom: -5px;
+    background-color: #1b1c1d;;
+    border-radius: 0 !important;
+}
+
+.ui.progress .bar {
+    background-color: #00dd00;
+}
+
+.ui.progress.success .bar {
+    background-color: #00dd00 !important;
+}
+
+.label-progstep {
+    font-size: 12px;
+    margin-top: -4px;
 }
 
 .layout-debugger-cursor {
