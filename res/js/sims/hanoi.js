@@ -5,6 +5,8 @@ const testfunc = function () {
 const initsimHanoi = () => {
     var interval;
     var animEasing = TWEEN.Easing.Cubic.InOut;
+    var playContinueousToggle = false;
+    var pauseToggle = true;
 
     const sets = {
         destroy: app => {
@@ -154,17 +156,31 @@ const initsimHanoi = () => {
             var _animTime = animTime;
             if (animTime === undefined || animTime == 0) _animTime = 1000;
             ALG.hanoi.playing = true;
+            playContinueousToggle = true;
             ALG.hanoi.forward(_animTime);
             interval = setInterval(() => {
                 if (!ALG.hanoi.forward(_animTime)) {
                     clearInterval(interval);
+                    playContinueousToggle = false;
                     ALG.hanoi.playing = false;
-                    Ctrler.find('.ctrlel').attr('disabled', false);
                 }
             }, _animTime + 100);
         },
         pause: () => {
-            //ALG.hanoi.playing = false;
+            if(pauseToggle) {
+                ALG.hanoi.playing = false;
+                playContinueousToggle = false;
+            }
+            else {
+                var c = setInterval(() => {
+                    if(pauseToggle) {
+                        ALG.hanoi.playing = false;
+                        playContinueousToggle = false;
+                        clearInterval(c);
+                    }
+                }, 25);
+            }
+            
             if (interval != null) {
                 clearInterval(interval);
             }
@@ -177,7 +193,6 @@ const initsimHanoi = () => {
                 if (!ALG.hanoi.backward(_animTime)) {
                     clearInterval(interval);
                     ALG.hanoi.playing = false;
-                    Ctrler.find('.ctrlel').attr('disabled', false);
                 }
             }, _animTime + 24);
             StepProgs.progress('reset');
@@ -201,10 +216,6 @@ const initsimHanoi = () => {
         forward: animTime => {
             if (ALG.hanoi.stepCount >= ALG.hanoi.steps.length) {
                 console.warn("단계의 끝입니다.");
-                Ctrler.find('#ctrl_play').attr('disabled', true);
-                $('#ctrl_play > i').removeClass('pause');
-                $('#ctrl_play > i').addClass('play');
-                $('#ctrl_play').addClass('ctrlel');
                 return false;
             }
 
@@ -287,8 +298,8 @@ const initsimHanoi = () => {
             var tweenMove = new TWEEN.Tween(coords);
             var tweenDown = new TWEEN.Tween(coords);
 
-            Ctrler.find('.ctrlel').attr('disabled', true);
-
+            ALG.hanoi.playing = true;
+            pauseToggle = false;
             tweenUp.to({ x: coords.x, y: upY }, _animTime / 10 * 2)
                 .easing(animEasing)
                 .onUpdate(function () {
@@ -311,7 +322,8 @@ const initsimHanoi = () => {
                 })
                 .onComplete(function () {
                     nextpol.push(currdisc);
-                    if (!ALG.hanoi.playing) Ctrler.find('.ctrlel').attr('disabled', false);
+                    pauseToggle = true;
+                    if(!playContinueousToggle) ALG.hanoi.playing = false;
                     ALG.hanoi.stepCount++;
                 });
 
@@ -408,8 +420,8 @@ const initsimHanoi = () => {
             var tweenMove = new TWEEN.Tween(coords);
             var tweenDown = new TWEEN.Tween(coords);
 
-            Ctrler.find('.ctrlel').attr('disabled', true);
-
+            ALG.hanoi.playing = true;
+            pauseToggle = false;
             tweenUp.to({ x: coords.x, y: upY }, _animTime / 10 * 2)
                 .easing(animEasing)
                 .onUpdate(function () {
@@ -432,7 +444,8 @@ const initsimHanoi = () => {
                 })
                 .onComplete(function () {
                     nextpol.push(currdisc);
-                    if (!ALG.hanoi.playing) Ctrler.find('.ctrlel').attr('disabled', false);
+                    pauseToggle = true;
+                    if(!playContinueousToggle) ALG.hanoi.playing = false;
                     //ALG.hanoi.stepCount--;
                 });
 

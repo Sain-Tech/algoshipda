@@ -250,18 +250,26 @@ const execAlgorithms = (js, args, callback) => {
     }
 }
 
+var isPlayingToggle = false;
+
 // Setup the animation loop.
 const animate = t => {
     requestAnimationFrame(animate);
     TWEEN.update(t);
     //console.log(true);
     if(!ALG[ALG.current].playing) {
-        //if(Ctrler != undefined) console.log(false);
-            //Ctrler.find('.ctrlel').attr('disabled', false);
+        if(Ctrler != undefined && !isPlayingToggle) {
+            isPlayingToggle = true;
+            console.log('Controller is enabled.');
+            Ctrler.find('.ctrlel').attr('disabled', false);
+        }
     }
     else {
-        //if(Ctrler != undefined) console.log(true);
-            //Ctrler.find('.ctrlel').attr('disabled', true);
+        if(Ctrler != undefined && isPlayingToggle) {
+            isPlayingToggle = false;
+            console.log('Controller is disabled.');
+            Ctrler.find('.ctrlel').attr('disabled', true);
+        }
     }
 }
 requestAnimationFrame(animate);
@@ -342,6 +350,10 @@ function doneResizing() {
         console.log(this[hidden]);
 
         if(this[hidden]) {
+            if(ALG[ALG.current].playing) $('#ctrl_play').attr('disabled', true);
+            $('#ctrl_play > i').removeClass('pause');
+            $('#ctrl_play > i').addClass('play');
+            $('#ctrl_play').addClass('ctrlel');
             ALG[ALG.current].pause();
         }
         else {
