@@ -191,6 +191,10 @@ const addSimCtrler = (fs, totalSteps, headerElms) => {
         }
     });
 
+    $('.ui.button').click(function () {
+        $('.ui.button').blur();
+    });
+
     $('.ui.progress')
         .progress({
             duration: 250,
