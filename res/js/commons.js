@@ -75,7 +75,7 @@ const completeDestroyElems = stage => {
     stage.removeChildren();
 }
 
-const addSimCtrler = (fs, totalSteps) => {
+const addSimCtrler = (fs, totalSteps, headerElms) => {
     var headerElms = `
         <div id="select_num" class="ui dropdown ctrlel" style="margin-left: auto">
             <input type="hidden" name="animtime">
@@ -95,11 +95,9 @@ const addSimCtrler = (fs, totalSteps) => {
             </div>
         </div>
         <script>
-            $('#select_num').dropdown({
-                transition: 'scale',
+            makeDropDown('#select_num', {
                 onChange: function(value, text, $choice) {
-                    console.log(value, text, $choice);
-                    ALG[ALG.current].reset(parseInt(value));
+                    ALG[ALG.current].reset(value);
                 }
             });
         </script>
@@ -165,13 +163,10 @@ const addSimCtrler = (fs, totalSteps) => {
 
     $("#ctrl_play").click(() => {
         if($('#ctrl_play > i').hasClass('play')) {
-            $('#ctrl_play > i').removeClass('play');
-            $('#ctrl_play > i').addClass('pause');
-            $('#ctrl_play').removeClass('ctrlel');
             fs.play(animTime);
         }
         else if($('#ctrl_play > i').hasClass('pause')) {
-            if(ALG[ALG.current].playing) $('#ctrl_play').attr('disabled', true);
+            if(ALG[ALG.current].playing) $('#ctrl_play').addClass('disabled');
             $('#ctrl_play > i').removeClass('pause');
             $('#ctrl_play > i').addClass('play');
             $('#ctrl_play').addClass('ctrlel');
@@ -190,11 +185,9 @@ const addSimCtrler = (fs, totalSteps) => {
 
     Ctrler = $(".controller");
 
-    $('#select_animtime').dropdown({
-        transition: 'scale',
+    makeDropDown('#select_animtime', {
         onChange: function(value, text, $choice) {
-            console.log(value, text, $choice);
-            animTime = parseInt(value);
+            animTime = value;
         }
     });
 
@@ -209,6 +202,51 @@ const addSimCtrler = (fs, totalSteps) => {
         }).progress('reset');
 
     StepProgs = $(".ui.progress");
+}
+
+const makeDropDown = (elm, opt = {
+    /**
+     * @param transition  드롭다운 애니메이션 타입
+     */
+    transition: 'scale',
+    /**
+     * @param value 선택 값
+     * @param text 선택 메뉴 이름
+     * @param $choice 선택 메뉴 jQuery 객체
+     */
+    onChange: (value, text, $choice) => {}
+}) => {
+
+    var menu = $(elm + ' > .menu');
+    if(opt.transition === undefined || opt.transition === null) opt.transition = 'scale';
+    menu.addClass('transition').addClass('hidden');
+
+    $(document).click(function(e) {
+        if((e.target.parentElement === $(elm)[0] || e.target === $(elm)[0]) && menu.hasClass('hidden') && !menu.hasClass('animating')) {
+            menu.attr('class', `menu transition visible animating ${opt.transition} in`);
+            setTimeout(function() {
+                menu.attr('class', 'menu transition visible');
+            }, 250);
+        }
+        else if(menu.hasClass('visible') && !menu.hasClass('animating')) {
+            menu.attr('class', `menu transition visible animating ${opt.transition} out`);
+            setTimeout(function() {
+                menu.attr('class', 'menu transition hidden');
+            }, 250);
+        }
+    });
+    
+    menu.click(function(e) {
+        var value = parseInt(e.target.attributes['data-value'].value);
+        var text = e.target.innerHTML;
+        var $choice = $(e.target);
+
+        $(menu).children().removeClass('active').removeClass('selected');
+        $choice.addClass('active selected');
+        $(elm + ' > .default.text').html(text);
+
+        opt.onChange(value, text, $choice);
+    });
 }
 
 const shuffleRandom = n => {
@@ -256,19 +294,26 @@ var isPlayingToggle = false;
 const animate = t => {
     requestAnimationFrame(animate);
     TWEEN.update(t);
-    //console.log(true);
+    if(ALG[ALG.current] === undefined) return;
     if(!ALG[ALG.current].playing) {
         if(Ctrler != undefined && !isPlayingToggle) {
             isPlayingToggle = true;
             console.log('Controller is enabled.');
-            Ctrler.find('.ctrlel').attr('disabled', false);
+            //$('#ctrl_play').attr('disabled', true);
+            $('#ctrl_play > i').removeClass('pause');
+            $('#ctrl_play > i').addClass('play');
+            $('#ctrl_play').addClass('ctrlel');
+            Ctrler.find('.ctrlel').removeClass('disabled');
         }
     }
     else {
         if(Ctrler != undefined && isPlayingToggle) {
             isPlayingToggle = false;
             console.log('Controller is disabled.');
-            Ctrler.find('.ctrlel').attr('disabled', true);
+            $('#ctrl_play > i').removeClass('play');
+            $('#ctrl_play > i').addClass('pause');
+            $('#ctrl_play').removeClass('ctrlel');
+            Ctrler.find('.ctrlel').addClass('disabled');
         }
     }
 }
@@ -350,10 +395,6 @@ function doneResizing() {
         console.log(this[hidden]);
 
         if(this[hidden]) {
-            if(ALG[ALG.current].playing) $('#ctrl_play').attr('disabled', true);
-            $('#ctrl_play > i').removeClass('pause');
-            $('#ctrl_play > i').addClass('play');
-            $('#ctrl_play').addClass('ctrlel');
             ALG[ALG.current].pause();
         }
         else {

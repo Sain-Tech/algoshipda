@@ -154,7 +154,7 @@ const initsimHanoi = () => {
         },
         play: animTime => {
             var _animTime = animTime;
-            if (animTime === undefined || animTime == 0) _animTime = 1000;
+            if (animTime === undefined || animTime < 0) _animTime = 1000;
             ALG.hanoi.playing = true;
             playContinueousToggle = true;
             ALG.hanoi.forward(_animTime);

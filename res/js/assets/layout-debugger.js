@@ -1,6 +1,42 @@
 var currentPos = `<p class="layout-debugger-cursor"></p>`;
 var point = '<div class="layout-debugger-point></div>'
 
+$(document.head).append(
+    `<style>
+        .layout-debugger-cursor {
+            position: absolute;
+            font-size: 9pt;
+            text-shadow: 1px 1px 1px #fff;
+        }
+        
+        .layout-debugger-point {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            outline: 1px solid black;
+            background-color: red;
+        }
+        
+        .layout-debugger-point > span {
+            pointer-events: none;
+            position: absolute;
+            width: 64px;
+            font-size: 9pt;
+            color: red;
+            text-shadow: 1px 1px 1px black;
+        }
+        
+        .layout-debugger-point > .dists {
+            pointer-events: none;
+            position: absolute;
+            width: 64px;
+            font-size: 9pt;
+            color: black;
+            text-shadow: 1px 1px 1px white;
+        }
+    </style>`
+);
+
 $(document).on('mouseover', e => {
     //console.log("mouse enter")
     $(document.body).append(currentPos);
