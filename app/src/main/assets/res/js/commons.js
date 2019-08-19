@@ -104,7 +104,7 @@ const addSimCtrler = (fs, totalSteps, headerElms) => {
     `;
     var upperCtrl = `
         <div id="ctrl_upper" class="ui inverted segment controller">
-            <h3 class="ui header" style="margin-right: auto; margin-bottom: 0">${ALG.currentTitle}</h3>
+            <h3 class="ui header title" style="margin-right: auto; margin-bottom: 0">${ALG.currentTitle}</h3>
             ${headerElms}
         </div>
     `;
