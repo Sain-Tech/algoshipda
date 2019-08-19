@@ -2,6 +2,8 @@
 .vscode/sftp.json
 .DS_Store
 node_modules
+.gradle
+.idea
 gradle
 /build.gradle
 gradle.properties
@@ -9,4 +11,4 @@ gradlew
 gradlew.bat
 local.properties
 settings.gradle
-WEBEX.iml
+algoshipda.iml
