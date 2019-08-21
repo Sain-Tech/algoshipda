@@ -5,9 +5,7 @@ const initsimInsertionSort = () => {
     var pauseToggle = true;
     var selectElm = `
     <div class="column">
-        <button class="circular ui icon basic button modal-close actions-select del">
-            <i class="icon close mini"></i>
-        </button>
+        <i class="times circle icon dlg-close actions-select del"></i>
         <select class="dlg-select">
             <option value="1" selected>1</option>
             <option value="2">2</option>
@@ -29,9 +27,7 @@ const initsimInsertionSort = () => {
     var modal = `
     <div class="dlg transparent">
         <div class="dlg-content">
-            <button id="dlg_close_default" class="circular ui icon basic button modal-close">
-                <i class="icon close mini"></i>
-            </button>
+            <i id="dlg_close_default" class="times circle icon dlg-close"></i>
 
             <div class="header">데이터 입력</div>
 
@@ -45,7 +41,7 @@ const initsimInsertionSort = () => {
                 <div class="two column row">
                     <div class="column">
                         <button class="actions-dlg add" type="button">
-                            <i class="plus icon"></i>
+                            <i class="plus circle icon"></i>
                             추가
                         </button>
                     </div>
@@ -97,22 +93,39 @@ const initsimInsertionSort = () => {
             if(num > 1) $(this).parent().detach();
         });
 
+        var inputArr = [1];
+
         $('.dlg').click(function(e) {
             var target = e.target;
             // console.log(target);
 
             if($(target).hasClass("dlg") || $(target).attr('id') === "action_cancel" || $(target).attr('id') === "dlg_close_default" || $(target).parent().attr('id') === "dlg_close_default") {
                 console.log("dialog close");
+
+                setTimeout(function() {
+                    $('#select_container').empty();
+                    for(var i = 0; i < inputArr.length; i++) {
+                        $('#select_container').append(`+"`" + selectElm + "`"+`);
+                        var selects = $('.dlg-content > .main > #select_container > .column > select');
+                        selects.eq(i).val(inputArr[i]);
+                    }
+                    $('.actions-select.del').click(function() {
+                        var num = $('.dlg-content > .main > #select_container > .column > select').length;
+                        if(num > 1) $(this).parent().detach();
+                    });
+                }, 333);
+
                 inputDialog.hide();
             }
 
             else if($(target).attr('id') === "action_ok") {
                 console.log("dialog ok");
-                var inputArr = [];
+                var arr = [];
                 var selects = $('.dlg-content > .main > #select_container > .column > select');
                 for(var i = 0; i < selects.length; i++) {
-                    inputArr.push(parseInt(selects.eq(i).val()));
+                    arr.push(parseInt(selects.eq(i).val()));
                 }
+                inputArr = arr;
                 console.log(inputArr);
                 inputDialog.hide();
             }
@@ -121,6 +134,8 @@ const initsimInsertionSort = () => {
         const inputDialog = {
             opened: false,
             show: function() {
+                if(inputDialog.opened) return;
+                inputDialog.opened = true;
                 $('.dlg').css({display:'block'});
                 setTimeout(function() {
                     $('.dlg').css({opacity:1});
@@ -130,6 +145,8 @@ const initsimInsertionSort = () => {
                 }, 84)
             },
             hide: function() {
+                if(!inputDialog.opened) return;
+                inputDialog.opened = false;
                 $('.dlg-content').css({opacity:0});
                 setTimeout(function() {
                     $('.dlg-content').css({transform:'scale(1.1)'});

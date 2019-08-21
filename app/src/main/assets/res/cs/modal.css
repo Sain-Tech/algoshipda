@@ -8,6 +8,11 @@
     background-color: rgba(0, 0, 0, 0.4);
     opacity: 0;
     transition: opacity .1333s;
+    -ms-user-select: none;
+    -moz-user-select: -moz-none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    user-select:none;
 }
 
 .dlg:before {
@@ -80,6 +85,7 @@
     background-color: transparent;
     color: rgba(255, 255, 255, 0.747);
     font-weight: 500;
+    margin-bottom: 1px;
 }
 
 .dlg-content > .ui.bottom.attached.buttons > .ui.button:hover {
@@ -96,39 +102,22 @@
     border-bottom-right-radius: 8px;
 }
 
-.ui.circular.button.modal-close {
-    padding: 0 !important;
-    height: 16px;
-    width: 16px;
-    background-color: #ffffff4b !important;
+.times.circle.icon.dlg-close {
     float: right;
-    margin-top: 4px;
+    color: #ffffff4a;
+    margin-top: 2px;
+    margin-right: 3px;
 }
 
-.ui.circular.button.modal-close:hover {
-    background-color: #ffffff6c !important;
+.times.circle.icon.dlg-close:hover {
+    color: #ffffff72;
 }
 
-.ui.circular.button.modal-close > .icon.close {
-    font-size: 10px;
-    width: 16.666px !important;
-}
-
-.ui.circular.button.modal-close > i::before{
-    color: #00000086 !important;
+.times.circle.icon.dlg-close.actions-select {
     position: absolute;
-    margin-left: -4px;
-    margin-top: -1px;
-}
-
-.ui.circular.button.modal-close:hover > i::before{
-    color: #00000069 !important;
-}
-
-.ui.circular.button.modal-close.actions-select {
-    position: absolute;
+    cursor: pointer;
     margin-left: 53px;
-    margin-top: 3px;
+    margin-top: 1.111px;
 }
 
 .dlg-select {
@@ -174,8 +163,7 @@
 
 .actions-dlg > i {
     float: left;
+    margin-left: -2px;
     margin-right: 0;
-    margin-top: 1.333px;
-    font-weight: 100;
-    font-size: 10px;
+    margin-top: 0;
 }
