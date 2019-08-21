@@ -1,5 +1,5 @@
 
-.vscode/sftp.json
+.vscode
 .DS_Store
 node_modules
 .gradle

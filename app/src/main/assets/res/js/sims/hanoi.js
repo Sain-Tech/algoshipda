@@ -7,6 +7,32 @@ const initsimHanoi = () => {
     var animEasing = TWEEN.Easing.Cubic.InOut;
     var playContinueousToggle = false;
     var pauseToggle = true;
+    var ctrlHeaderElms = `
+        <div id="select_num" class="ui dropdown ctrlel" style="margin-left: auto">
+            <input type="hidden" name="animtime">
+            <i class="dropdown icon"></i>
+            <div class="default text">원반 수</div>
+            <div class="menu">
+                <div class="item" data-value="1">1</div>
+                <div class="item" data-value="2">2</div>
+                <div class="item" data-value="3">3</div>
+                <div class="item" data-value="4">4</div>
+                <div class="item" data-value="5">5</div>
+                <div class="item" data-value="6">6</div>
+                <div class="item" data-value="7">7</div>
+                <div class="item" data-value="8">8</div>
+                <div class="item" data-value="9">9</div>
+                <div class="item" data-value="10">10</div>
+            </div>
+        </div>
+        <script>
+            makeDropDown('#select_num', {
+                onChange: function(value, text, $choice) {
+                    ALG[ALG.current].reset(value);
+                }
+            });
+        </script>
+    `;
 
     const sets = {
         destroy: app => {
@@ -37,14 +63,13 @@ const initsimHanoi = () => {
             if (arg === undefined || arg === 0) {
                 app = initSim.make({
                     width: window.innerWidth,
-                    height: window.innerWidth / 2.612,
+                    height: window.innerWidth / 2.4,
                     backgroundColor: 0xffffff,
                     antialias: true,
-                    resolution: 1
+                    resolution: devicePixelRatio <= 1 ? devicePixelRatio * 1.5 : devicePixelRatio
                 });
                 initSim.set(app);
                 initSim.append(".simcont", app);
-                app.renderer.resize(app.renderer.view.parentElement.clientWidth - 32, app.renderer.view.parentElement.clientHeight);
             }
             else {
                 app = ALG.hanoi.app;
@@ -122,7 +147,7 @@ const initsimHanoi = () => {
                             reset: ALG.hanoi.reset,
                             backward: ALG.hanoi.backward,
                             forward: ALG.hanoi.forward,
-                        }, data.length);
+                        }, data.length, ctrlHeaderElms);
                     }, 333);
                 }
                 else {

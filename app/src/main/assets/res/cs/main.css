@@ -25,6 +25,10 @@
     font-weight: 500;
 }
 
+.btn-sim-setup {
+    cursor: pointer;
+}
+
 #ctrl_lower {
     margin: 0;
     border-top-left-radius: 0;
@@ -67,7 +71,7 @@
 .ui.progress.tiny {
     height: 5px;
     margin-bottom: -5px;
-    background-color: #1b1c1d;;
+    background-color: #1b1c1d;
     border-radius: 0 !important;
 }
 

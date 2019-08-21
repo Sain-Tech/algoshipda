@@ -59,6 +59,10 @@ onmessage = function (e) {
             postMessage(algHanoi(e.data.n));
             break;
 
+        case "insertionsort":
+            postMessage(algInsertionSort(e.data.n));
+            break;
+
         default:
             break;
     }

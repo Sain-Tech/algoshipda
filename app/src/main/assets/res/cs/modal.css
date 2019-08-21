@@ -1,0 +1,181 @@
+.dlg {
+    display: none;
+    position: absolute;
+    z-index: 999;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    transition: opacity .1333s;
+}
+
+.dlg:before {
+    content: "";
+    display: inline-block;
+    width: 1px;
+    height: 100%;
+    margin-right: 0;
+    vertical-align: middle;
+}
+
+.dlg-content {
+    display: inline-block;
+    vertical-align: middle;
+    backdrop-filter: blur(16px);
+    background-color: #26292bc2;
+    border-radius: 8px;
+    min-width: 200px;
+    max-width: 240px;
+    box-shadow: #000000aa 1px 3px 16px 0px;
+    transition: all .2s;
+    transform: scale(1.1);
+    opacity: 0;
+}
+
+.dlg-content > .header {
+    padding: 16px;
+    font-size: 16px;
+    color: #ffffffff;
+}
+
+.dlg-content > .main {
+    min-height: 48px;
+    padding-left: 8px;
+    padding-right: 8px;
+    border: none !important;
+    background-color: transparent;
+}
+
+.dlg-content > .action-divider {
+    width: calc(100% - 2px);
+    border: none;
+    border-top: 1px solid #ffffff24;
+    margin-left: auto;
+    margin-right: auto;
+    height: 2px;
+}
+
+.dlg-content > .main > .action-divider {
+    width: calc(100% - 4px);
+    border: none;
+    border-top: 2px solid #ffffff32;
+    margin-left: auto;
+    margin-right: auto;
+    height: 2px;
+}
+
+.dlg-content > .ui.bottom.attached.buttons {
+    border: none;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    min-height: 24px;
+    width: calc(100% - 2px) !important;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.dlg-content > .ui.bottom.attached.buttons > .ui.button {
+    border: none;
+    background-color: transparent;
+    color: rgba(255, 255, 255, 0.747);
+    font-weight: 500;
+}
+
+.dlg-content > .ui.bottom.attached.buttons > .ui.button:hover {
+    background-color: #ffffff24;
+    color: #ffffffff;
+}
+
+.dlg-content > .ui.bottom.attached.buttons > .ui.button:first-child {
+    border-bottom-left-radius: 8px;
+    border-right: 1px solid #ffffff24;
+}
+
+.dlg-content > .ui.bottom.attached.buttons > .ui.button:last-child {
+    border-bottom-right-radius: 8px;
+}
+
+.ui.circular.button.modal-close {
+    padding: 0 !important;
+    height: 16px;
+    width: 16px;
+    background-color: #ffffff4b !important;
+    float: right;
+    margin-top: 4px;
+}
+
+.ui.circular.button.modal-close:hover {
+    background-color: #ffffff6c !important;
+}
+
+.ui.circular.button.modal-close > .icon.close {
+    font-size: 10px;
+    width: 16.666px !important;
+}
+
+.ui.circular.button.modal-close > i::before{
+    color: #00000086 !important;
+    position: absolute;
+    margin-left: -4px;
+    margin-top: -1px;
+}
+
+.ui.circular.button.modal-close:hover > i::before{
+    color: #00000069 !important;
+}
+
+.ui.circular.button.modal-close.actions-select {
+    position: absolute;
+    margin-left: 53px;
+    margin-top: 3px;
+}
+
+.dlg-select {
+    background-color: transparent;
+    color: white;
+    border-radius: 50px;
+    outline: none;
+    min-width: 72px;
+    height: 22px;
+    padding-left: 10px;
+    margin-bottom: 10px;
+    font-size: 12px;
+    -webkit-appearance: none;
+}
+
+.dlg-select::-ms-expand {
+    display: none;
+}
+
+.dlg-select:hover {
+    background-color: #ffffff24
+}
+
+.dlg-select > option {
+    background-color: #0000009c;
+}
+
+.actions-dlg {
+    outline: none;
+    background-color: #ffffff24;
+    border: none;
+    border: 1px solid #a9a9a9;
+    border-radius: 50px;
+    min-width: 72px;
+    height: 22px;
+    color: white;
+    font-size: 12px;
+}
+
+.actions-dlg:hover {
+    background-color: #ffffff36
+}
+
+.actions-dlg > i {
+    float: left;
+    margin-right: 0;
+    margin-top: 1.333px;
+    font-weight: 100;
+    font-size: 10px;
+}
