@@ -1,8 +1,8 @@
 // 문서가 로드되었을때 실행할 코드들...
 $(document).ready(function () {
     init();
-    //console.log(ALG.hanoi.makes(3));
-    console.log(ALG.insertionsort.makes([1, 10, 2, 9, 3, 8, 4, 7, 5, 6]));
+    initsimHanoi();
+    ALG.hanoi.makes(5);
 });
 
 // 시뮬레이터 초기화 함수
@@ -12,3 +12,33 @@ var init = () => {
     //initsimHanoi();
     initsimInsertionSort();
 }
+
+const simTest = function(e) {
+    const selection = parseInt($(e.target).attr('data-value'));
+    console.log(selection);
+    ALG[ALG.current].destroy(ALG[ALG.current].app);
+    console.log(parseInt($(e.target).attr('data-value')));
+
+    switch(selection) {
+        case 0:
+            initsimHanoi();
+            ALG.hanoi.makes(5);
+            break;
+
+        case 1:
+            initsimInsertionSort();
+            var arr = [];
+            for(var i = 0; i < 8; i++) {
+                var randNum = Math.floor(Math.random() * 15) + 1;
+                arr.push(randNum);
+            }
+            console.log(ALG.insertionsort.makes(arr));
+            break;
+
+        default:
+            alert("Unknown action!");
+            break;
+    }
+}
+
+$(document).on('click', '.link', simTest);

@@ -3,6 +3,7 @@ const initsimInsertionSort = () => {
     var animEasing = TWEEN.Easing.Cubic.InOut;
     var playContinueousToggle = false;
     var pauseToggle = true;
+    var inputDialog;
     var selectElm = `
     <div class="column">
         <i class="times circle icon dlg-close actions-select del"></i>
@@ -33,6 +34,13 @@ const initsimInsertionSort = () => {
 
             <div class="ui grid attached segment main">
                 <div id="select_container" class="two column row">
+                    ${selectElm}
+                    ${selectElm}
+                    ${selectElm}
+                    ${selectElm}
+                    ${selectElm}
+                    ${selectElm}
+                    ${selectElm}
                     ${selectElm}
                 </div>
 
@@ -75,7 +83,7 @@ const initsimInsertionSort = () => {
             if(num < 10) $('#select_container').append(`+"`" + selectElm + "`"+`);
             $('.actions-select.del').click(function() {
                 var num = $('.dlg-content > .main > #select_container > .column > select').length;
-                if(num > 1) $(this).parent().detach();
+                if(num > 2) $(this).parent().detach();
             });
         });
 
@@ -90,18 +98,16 @@ const initsimInsertionSort = () => {
 
         $('.actions-select.del').click(function() {
             var num = $('.dlg-content > .main > #select_container > .column > select').length;
-            if(num > 1) $(this).parent().detach();
+            if(num > 2) $(this).parent().detach();
         });
 
-        var inputArr = [1];
+        var inputArr = [1, 2];
+        $('.dlg-content > .main > #select_container > .column > select')[1].value = 2;
 
         $('.dlg').click(function(e) {
             var target = e.target;
-            // console.log(target);
 
             if($(target).hasClass("dlg") || $(target).attr('id') === "action_cancel" || $(target).attr('id') === "dlg_close_default" || $(target).parent().attr('id') === "dlg_close_default") {
-                console.log("dialog close");
-
                 setTimeout(function() {
                     $('#select_container').empty();
                     for(var i = 0; i < inputArr.length; i++) {
@@ -111,7 +117,7 @@ const initsimInsertionSort = () => {
                     }
                     $('.actions-select.del').click(function() {
                         var num = $('.dlg-content > .main > #select_container > .column > select').length;
-                        if(num > 1) $(this).parent().detach();
+                        if(num > 2) $(this).parent().detach();
                     });
                 }, 333);
 
@@ -119,19 +125,18 @@ const initsimInsertionSort = () => {
             }
 
             else if($(target).attr('id') === "action_ok") {
-                console.log("dialog ok");
                 var arr = [];
                 var selects = $('.dlg-content > .main > #select_container > .column > select');
                 for(var i = 0; i < selects.length; i++) {
                     arr.push(parseInt(selects.eq(i).val()));
                 }
                 inputArr = arr;
-                console.log(inputArr);
+                ALG.insertionsort.reset(inputArr);
                 inputDialog.hide();
             }
         });
 
-        const inputDialog = {
+        inputDialog = {
             opened: false,
             show: function() {
                 if(inputDialog.opened) return;
@@ -171,6 +176,7 @@ const initsimInsertionSort = () => {
 
             completeDestroyElems(app.stage);
 
+            $('.dlg').detach();
             $('#ctrl_upper').detach();
             $('#ctrl_lower').detach();
             $(app.renderer.view).detach();
@@ -186,6 +192,8 @@ const initsimInsertionSort = () => {
             var app = undefined;
             var w = undefined;
             var h = undefined;
+
+            var _origInputData = arr.slice();
 
             if (arg === undefined || arg === 0) {
                 app = initSim.make({
@@ -212,7 +220,7 @@ const initsimInsertionSort = () => {
                 var dataLen = arr.length;
 
                 var _w = w / 16;
-                var _h = w / 16 + (arr[i] - 1) * w / 64;
+                var _h = w / 16 + (arr[i] - 1) * w / 80;
                 var _spce = w / 36;
                 var _startPoint = hCenter - (parseFloat(dataLen / 2) * (_w + _spce)) + _spce / 2;
                 var _x = _startPoint + i * (_w + _spce);
@@ -232,63 +240,361 @@ const initsimInsertionSort = () => {
                 });
 
                 bar.beginFill(colorset[colorMap.pop() - 1]);
-                bar.drawRoundedRect(_x, _y, _w, _h, _r);
+                bar.drawRoundedRect(0, 0, _w, _h, _r);
                 bar.endFill();
-                txt.x = arr[i] < 10 ? _x + _w / 3.18 : _x + _w / 8;
-                txt.y = h - w / 3.29;
                 objs.push({bar: bar, txt: txt});
                 app.stage.addChild(bar);
                 app.stage.addChild(txt);
+                bar.x = _x;
+                bar.y = _y;
+                txt.x = arr[i] < 10 ? _x + _w / 3.18 : _x + _w / 8;
+                txt.y = h - w / 3.29;
             }
 
-            execAlgorithms("res/js/assets/algorithms.js", {
+            ALG.insertionsort.gObjs = objs;
+
+            var result = algInsertionSort(arr, objs);
+
+            ALG.insertionsort.steps = result.g;
+            ALG.insertionsort.resultArr = result.a;
+
+            if (arg === undefined || arg === 0) {
+                setTimeout(function () {
+                    $(".simcont").css({ opacity: 1 });
+                    addSimCtrler({
+                        play: ALG.insertionsort.play,
+                        pause: ALG.insertionsort.pause,
+                        reset: ALG.insertionsort.reset,
+                        backward: ALG.insertionsort.backward,
+                        forward: ALG.insertionsort.forward,
+                    }, result.a.length, ctrlHeaderElms);
+                    
+                    // init select on input dialog
+                    var selects = $('.dlg-content > .main > #select_container > .column > select');
+                    for(var i = 0; i < selects.length; i++) {
+                        selects[i].value = _origInputData[i];
+                    }
+                }, 333);
+            }
+            else {
+                StepProgs.progress({
+                    duration: 250,
+                    total: result.a.length,
+                    label: 'none',
+                    onChange: function (percent, value, total) {
+                        $('.label-progstep').html(`${value} / ${total}`)
+                    }
+                }).progress('reset');
+            }
+
+            setTimeout(function () {
+                inputArr = _origInputData;
+            }, 333);
+
+            /*execAlgorithms("res/js/assets/algorithms.js", {
                 name: "insertionsort",
-                n: arr
+                n: arr,
+                g: JSON.stringify(objs)
             }, data => {
-                ALG.insertionsort.steps = data;
-                if (arg === undefined || arg === 0) {
-                    setTimeout(function () {
-                        $(".simcont").css({ opacity: 1 });
-                        addSimCtrler({
-                            play: ALG.insertionsort.play,
-                            pause: ALG.insertionsort.pause,
-                            reset: ALG.insertionsort.reset,
-                            backward: ALG.insertionsort.backward,
-                            forward: ALG.insertionsort.forward,
-                        }, data.length, ctrlHeaderElms);
-                    }, 333);
-                }
-                else {
-                    StepProgs.progress({
-                        duration: 250,
-                        total: data.length,
-                        label: 'none',
-                        onChange: function (percent, value, total) {
-                            $('.label-progstep').html(`${value} / ${total}`)
-                        }
-                    }).progress('reset');
-                }
-            });
+                ALG.insertionsort.steps = data.g;
+                ALG.insertionsort.resultArr = data.a;
+                
+            });*/
 
             ALG.current = "insertionsort";
             ALG.currentTitle = "삽입 정렬";
             ALG.insertionsort.app = app;
             ALG.insertionsort.array = arr;
-            ALG.insertionsort.num = arr.length;
+            ALG.insertionsort.num = _origInputData;
+            ALG.insertionsort.length = arr.length;
             ALG.insertionsort.stepCount = 0;
-            ALG.insertionsort.gObjs = objs;
             ALG.insertionsort.playing = false;
-
-            $('.simcont').css({opacity: 1});
 
             return app;
         },
-        play: animTime => {},
-        pause: () => {},
-        rewind: () => {},
-        reset: arr => {},
-        forward: animTime => {},
-        backward: animTime => {}
+        play: animTime => {
+            var _animTime = animTime;
+            if (animTime === undefined || animTime < 0) _animTime = 1000;
+            ALG.insertionsort.playing = true;
+            playContinueousToggle = true;
+            ALG.insertionsort.forward(_animTime);
+            interval = setInterval(() => {
+                if (!ALG.insertionsort.forward(_animTime)) {
+                    clearInterval(interval);
+                    playContinueousToggle = false;
+                    ALG.insertionsort.playing = false;
+                }
+            }, _animTime);
+        },
+        pause: () => {
+            if(pauseToggle) {
+                ALG.insertionsort.playing = false;
+                playContinueousToggle = false;
+            }
+            else {
+                var c = setInterval(() => {
+                    if(pauseToggle) {
+                        ALG.insertionsort.playing = false;
+                        playContinueousToggle = false;
+                        clearInterval(c);
+                    }
+                }, 25);
+            }
+            
+            if (interval != null) {
+                clearInterval(interval);
+            }
+        },
+        rewind: () => {
+            var _animTime = 0;
+            ALG.insertionsort.playing = true;
+            ALG.insertionsort.backward(_animTime);
+            interval = setInterval(() => {
+                if (!ALG.insertionsort.backward(_animTime)) {
+                    clearInterval(interval);
+                    ALG.insertionsort.playing = false;
+                }
+            }, _animTime + 24);
+            StepProgs.progress('reset');
+        },
+        reset: arr => {
+            var _arr = arr;
+            var _app = ALG.insertionsort.app;
+
+            if (arr === undefined || arr.length < 1) _arr = ALG.insertionsort.num;
+            //$(".simcont > canvas").css({ opacity: 0 });
+
+            if (interval != null) {
+                clearInterval(interval);
+            }
+
+            completeDestroyElems(_app.stage);
+
+            ALG.insertionsort.makes(_arr, 1);
+            StepProgs.progress('reset');
+        },
+        forward: animTime => {
+            if (ALG.insertionsort.stepCount >= ALG.insertionsort.steps.length) {
+                console.warn("단계의 끝입니다.");
+                return false;
+            }
+
+            var _animTime = animTime;
+            if (animTime === undefined || animTime < 0) _animTime = 1000;
+
+            var w = ALG.insertionsort.app.screen.width;
+            var h = ALG.insertionsort.app.screen.height;
+            var _currstep = ALG.insertionsort.steps[ALG.insertionsort.stepCount];
+            var _currArr = ALG.insertionsort.resultArr[ALG.insertionsort.stepCount];
+
+            ALG.insertionsort.playing = true;
+            pauseToggle = false;
+
+            var coords = [{ x: 0, y: 0 },{ x: 0, y: 0 },{ x: 0, y: 0 },{ x: 0, y: 0 }];
+            var tweens = [new TWEEN.Tween(coords[0]),new TWEEN.Tween(coords[1])
+                ,new TWEEN.Tween(coords[2]),new TWEEN.Tween(coords[3])];
+
+            let toBarX, toBarY, toTxtX, toTxtY, toBar2X, toBar2Y, toTxt2X, toTxt2Y = undefined;
+            coords[0].x = _currstep.from.bar.x;
+            coords[0].y = _currstep.from.bar.y;
+            coords[1].x = _currstep.from.txt.x;
+            coords[1].y = _currstep.from.txt.y;
+            coords[2].x = _currstep.to.bar.x;
+            coords[2].y = _currstep.to.bar.y;
+            coords[3].x = _currstep.to.txt.x;
+            coords[3].y = _currstep.to.txt.y;
+
+            var origBarH = w / 16 + (_currArr.from - 1) * w / 80;
+            var origBarY = h - origBarH - w / 4;
+            var origTxtY = h - w / 3.29;
+
+            switch(_currstep.action) {
+                case 'extract':
+                    toBarX = _currstep.from.bar.x;
+                    toBarY = h - _currstep.from.bar.height;
+                    toTxtX = _currstep.from.txt.x;
+                    toTxtY = _currstep.from.txt.y + (toBarY - coords[0].y);
+                    break;
+
+                case 'swap':
+                    toBarX = _currstep.to.bar.x;
+                    toBarY = _currstep.from.bar.y;
+                    toTxtX = _currstep.from.txt.x - (coords[0].x - toBarX);
+                    toTxtY = _currstep.from.txt.y;
+
+                    toBar2X = _currstep.from.bar.x;
+                    toBar2Y = _currstep.to.bar.y;
+                    toTxt2X = _currstep.to.txt.x + (toBar2X - coords[2].x);
+                    toTxt2Y = _currstep.to.txt.y;
+                    break;
+                
+                case 'insert':
+                    toBarX = _currstep.from.bar.x;
+                    toBarY = origBarY;
+                    toTxtX = _currstep.from.txt.x;
+                    toTxtY = origTxtY;
+                    break;
+
+                default:
+                    console.error('unknown animation action!');
+                    break;
+            }
+
+            if(toBar2X != undefined && toBar2Y != undefined 
+                && toTxt2X != undefined && toTxt2Y != undefined) {
+                
+                tweens[2].to({x: toBar2X, y: toBar2Y}, _animTime / 2.5)
+                .easing(animEasing)
+                .onUpdate(function () {
+                    _currstep.to.bar.x = coords[2].x;
+                    _currstep.to.bar.y = coords[2].y;
+                });
+                tweens[2].start();
+    
+                tweens[3].to({x: toTxt2X, y: toTxt2Y}, _animTime / 2.5)
+                .easing(animEasing)
+                .onUpdate(function () {
+                    _currstep.to.txt.x = coords[3].x;
+                    _currstep.to.txt.y = coords[3].y;
+                });
+                tweens[3].start();
+            }
+            
+            tweens[0].to({x: toBarX, y: toBarY}, _animTime / 2.5)
+            .easing(animEasing)
+            .onUpdate(function () {
+                _currstep.from.bar.x = coords[0].x;
+                _currstep.from.bar.y = coords[0].y;
+            });
+            tweens[0].start();
+
+            tweens[1].to({x: toTxtX, y: toTxtY}, _animTime / 2.5)
+            .easing(animEasing)
+            .onUpdate(function () {
+                _currstep.from.txt.x = coords[1].x;
+                _currstep.from.txt.y = coords[1].y;
+            })
+            .onComplete(function () {
+                pauseToggle = true;
+                if(!playContinueousToggle) ALG.insertionsort.playing = false;
+                ALG.insertionsort.stepCount++;
+            });
+            tweens[1].start();
+            StepProgs.progress('increment');
+            
+            return true;
+        },
+        backward: animTime => {
+            if (ALG.insertionsort.stepCount > 0) ALG.insertionsort.stepCount--;
+            else {
+                console.warn("단계의 시작입니다.");
+                return false;
+            }
+
+            var _animTime = animTime;
+            if (animTime === undefined || animTime < 0) _animTime = 1000;
+
+            var w = ALG.insertionsort.app.screen.width;
+            var h = ALG.insertionsort.app.screen.height;
+            var _currstep = ALG.insertionsort.steps[ALG.insertionsort.stepCount];
+            var _currArr = ALG.insertionsort.resultArr[ALG.insertionsort.stepCount];
+
+            ALG.insertionsort.playing = true;
+            pauseToggle = false;
+
+            var coords = [{ x: 0, y: 0 },{ x: 0, y: 0 },{ x: 0, y: 0 },{ x: 0, y: 0 }];
+            var tweens = [new TWEEN.Tween(coords[0]),new TWEEN.Tween(coords[1])
+                ,new TWEEN.Tween(coords[2]),new TWEEN.Tween(coords[3])];
+
+            let toBarX, toBarY, toTxtX, toTxtY, toBar2X, toBar2Y, toTxt2X, toTxt2Y = undefined;
+            coords[0].x = _currstep.from.bar.x;
+            coords[0].y = _currstep.from.bar.y;
+            coords[1].x = _currstep.from.txt.x;
+            coords[1].y = _currstep.from.txt.y;
+            coords[2].x = _currstep.to.bar.x;
+            coords[2].y = _currstep.to.bar.y;
+            coords[3].x = _currstep.to.txt.x;
+            coords[3].y = _currstep.to.txt.y;
+
+            var origBarH = w / 16 + (_currArr.from - 1) * w / 80;
+            var origBarY = h - origBarH - w / 4;
+            var origTxtY = h - w / 3.29;
+
+            switch(_currstep.action) {
+                case 'extract':
+                    toBarX = _currstep.from.bar.x;
+                    toBarY = origBarY;
+                    toTxtX = _currstep.from.txt.x;
+                    toTxtY = origTxtY;
+                    break;
+
+                case 'swap':
+                    toBarX = _currstep.to.bar.x;
+                    toBarY = _currstep.from.bar.y;
+                    toTxtX = _currstep.from.txt.x - (coords[0].x - toBarX);
+                    toTxtY = _currstep.from.txt.y;
+
+                    toBar2X = _currstep.from.bar.x;
+                    toBar2Y = _currstep.to.bar.y;
+                    toTxt2X = _currstep.to.txt.x + (toBar2X - coords[2].x);
+                    toTxt2Y = _currstep.to.txt.y;
+                    break;
+                
+                case 'insert':
+                    toBarX = _currstep.from.bar.x;
+                    toBarY = h - _currstep.from.bar.height;
+                    toTxtX = _currstep.from.txt.x;
+                    toTxtY = _currstep.from.txt.y + (toBarY - coords[0].y);
+                    break;
+
+                default:
+                    console.error('unknown animation action!');
+                    break;
+            }
+
+            if(toBar2X != undefined && toBar2Y != undefined 
+                && toTxt2X != undefined && toTxt2Y != undefined) {
+                
+                tweens[2].to({x: toBar2X, y: toBar2Y}, _animTime / 2.5)
+                .easing(animEasing)
+                .onUpdate(function () {
+                    _currstep.to.bar.x = coords[2].x;
+                    _currstep.to.bar.y = coords[2].y;
+                });
+                tweens[2].start();
+    
+                tweens[3].to({x: toTxt2X, y: toTxt2Y}, _animTime / 2.5)
+                .easing(animEasing)
+                .onUpdate(function () {
+                    _currstep.to.txt.x = coords[3].x;
+                    _currstep.to.txt.y = coords[3].y;
+                });
+                tweens[3].start();
+            }
+            
+            tweens[0].to({x: toBarX, y: toBarY}, _animTime / 2.5)
+            .easing(animEasing)
+            .onUpdate(function () {
+                _currstep.from.bar.x = coords[0].x;
+                _currstep.from.bar.y = coords[0].y;
+            });
+            tweens[0].start();
+
+            tweens[1].to({x: toTxtX, y: toTxtY}, _animTime / 2.5)
+            .easing(animEasing)
+            .onUpdate(function () {
+                _currstep.from.txt.x = coords[1].x;
+                _currstep.from.txt.y = coords[1].y;
+            })
+            .onComplete(function () {
+                pauseToggle = true;
+                if(!playContinueousToggle) ALG.insertionsort.playing = false;
+            });
+            tweens[1].start();
+            StepProgs.progress('decrement');
+            
+            return true;
+        }
     }
 
     ALG.insertionsort = sets;

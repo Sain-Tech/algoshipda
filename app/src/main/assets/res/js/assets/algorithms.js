@@ -26,30 +26,51 @@ var algHanoi = function (n) {
     return _arr;
 }
 
-var algInsertionSort = function (array) {
+var algInsertionSort = function (array, gObjs) {
+    var rObj = {};
     var _arr = [];
+    var _gArr = [];
+
     var core = function (array) {
-        var i, j, n, temp;
+        var i, j, n, temp, gTemp;
         n = array.length;
+        // 첫 번째 원소 단계 추가
+        _arr.push({action: 'extract', from: array[0], to: array[0]});
+        _arr.push({action: 'insert', from: array[0], to: array[0]});
+        _gArr.push({action: 'extract', from: gObjs[0], to: gObjs[0]});
+        _gArr.push({action: 'insert', from: gObjs[0], to: gObjs[0]});
 
         for (i = 1; i < n; i++) {
-            var _inarr = [];
             temp = array[(j = i)];
+            gTemp = gObjs[(j = i)];
+
+            // extract
+            _arr.push({action: 'extract', from: temp, to: temp});
+            _gArr.push({action: 'extract', from: gTemp, to: gTemp});
             while (--j >= 0 && temp < array[j]) {
-                var _obj = {}
-                _obj.from = array[j + 1];
-                _obj.to = array[j];
+                //swap
+                _arr.push({action: 'swap', from: array[j + 1], to: array[j]});
+                _gArr.push({action: 'swap', from: gObjs[j + 1], to: gObjs[j]});
+
                 array[j + 1] = array[j];
+                gObjs[j + 1] = gObjs[j];
                 array[j] = temp;
-                _inarr.push(_obj);
+                gObjs[j] = gTemp;
             }
-            _arr.push(_inarr);
+            // insert
+            _arr.push({action: 'insert', from: temp, to: temp});
+            _gArr.push({action: 'insert', from: gTemp, to: gTemp});
         }
+        
         return array;
     }
 
     core(array);
-    return _arr;
+
+    rObj.a = _arr;
+    rObj.g = _gArr;
+
+    return rObj;
 }
 
 onmessage = function (e) {
@@ -60,7 +81,7 @@ onmessage = function (e) {
             break;
 
         case "insertionsort":
-            postMessage(algInsertionSort(e.data.n));
+            postMessage(algInsertionSort(e.data.n, JSON.parse(e.data.g)));
             break;
 
         default:

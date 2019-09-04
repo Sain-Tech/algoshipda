@@ -1,3 +1,7 @@
+a {
+    cursor: pointer;
+}
+
 .simcont {
     padding: 16px;
     opacity: 0;
