@@ -313,8 +313,8 @@ const initsimInsertionSort = () => {
             return app;
         },
         play: animTime => {
-            var _animTime = animTime;
-            if (animTime === undefined || animTime < 0) _animTime = 1000;
+            var _animTime = animTime / 2;
+            if (animTime === undefined || animTime < 0) _animTime = 1000 / 2;
             ALG.insertionsort.playing = true;
             playContinueousToggle = true;
             ALG.insertionsort.forward(_animTime);
@@ -324,7 +324,7 @@ const initsimInsertionSort = () => {
                     playContinueousToggle = false;
                     ALG.insertionsort.playing = false;
                 }
-            }, _animTime);
+            }, _animTime + 25);
         },
         pause: () => {
             if(pauseToggle) {
@@ -380,7 +380,7 @@ const initsimInsertionSort = () => {
             }
 
             var _animTime = animTime;
-            if (animTime === undefined || animTime < 0) _animTime = 1000;
+            if (animTime === undefined || animTime < 0) _animTime = 1000 / 2;
 
             var w = ALG.insertionsort.app.screen.width;
             var h = ALG.insertionsort.app.screen.height;
@@ -443,7 +443,7 @@ const initsimInsertionSort = () => {
             if(toBar2X != undefined && toBar2Y != undefined 
                 && toTxt2X != undefined && toTxt2Y != undefined) {
                 
-                tweens[2].to({x: toBar2X, y: toBar2Y}, _animTime / 2.5)
+                tweens[2].to({x: toBar2X, y: toBar2Y}, _animTime / 1.2)
                 .easing(animEasing)
                 .onUpdate(function () {
                     _currstep.to.bar.x = coords[2].x;
@@ -451,7 +451,7 @@ const initsimInsertionSort = () => {
                 });
                 tweens[2].start();
     
-                tweens[3].to({x: toTxt2X, y: toTxt2Y}, _animTime / 2.5)
+                tweens[3].to({x: toTxt2X, y: toTxt2Y}, _animTime / 1.2)
                 .easing(animEasing)
                 .onUpdate(function () {
                     _currstep.to.txt.x = coords[3].x;
@@ -460,7 +460,7 @@ const initsimInsertionSort = () => {
                 tweens[3].start();
             }
             
-            tweens[0].to({x: toBarX, y: toBarY}, _animTime / 2.5)
+            tweens[0].to({x: toBarX, y: toBarY}, _animTime / 1.2)
             .easing(animEasing)
             .onUpdate(function () {
                 _currstep.from.bar.x = coords[0].x;
@@ -468,7 +468,7 @@ const initsimInsertionSort = () => {
             });
             tweens[0].start();
 
-            tweens[1].to({x: toTxtX, y: toTxtY}, _animTime / 2.5)
+            tweens[1].to({x: toTxtX, y: toTxtY}, _animTime / 1.2)
             .easing(animEasing)
             .onUpdate(function () {
                 _currstep.from.txt.x = coords[1].x;
@@ -492,7 +492,7 @@ const initsimInsertionSort = () => {
             }
 
             var _animTime = animTime;
-            if (animTime === undefined || animTime < 0) _animTime = 1000;
+            if (animTime === undefined || animTime < 0) _animTime = 1000 / 2;
 
             var w = ALG.insertionsort.app.screen.width;
             var h = ALG.insertionsort.app.screen.height;
