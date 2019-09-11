@@ -1,5 +1,12 @@
-a {
+header {
+    width: 100%;
+    display: flex;
+}
+
+a.link {
     cursor: pointer;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .simcont {
