@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
         webSettings.setSavePassword(false);
         webSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
         webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
-        webSettings.setAppCacheEnabled(false);
 
         webView.setWebChromeClient(new WebChromeClient());
         webView.setWebViewClient(new WebViewClient());
