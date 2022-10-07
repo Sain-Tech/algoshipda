@@ -7,7 +7,7 @@
 
 ![image](https://user-images.githubusercontent.com/5365310/162261553-e6adb7d1-4dc7-4841-97df-7b128c220be0.png)
 
-## 실행 방법
+## 실행 방법?
 
 ```sh
 ### 프로젝트 가져오기 ###
